@@ -43,6 +43,7 @@ HA_HP<-HA_HP[complete.cases(HA_HP),]
 #################  First, find candidate lineage regulators in each pairwise cell line comparison#############
 ###HA_CVP
 #An integrated candidate regulator first needs to be differentially expressed (2 fold change, FDR<0.05)
+#For the expression-only regulator list, rank genes based on FDR, and no further integration with ChIP-seq data is needed. 
 deg<-subset(CVP_HA,subset=padj<0.05&abs(log2FoldChange)>1,select=gene_name,drop=TRUE)
 #Second, it needs to have significant changes in either H3K4me3 or H3K27me3
 chipseq<-union(K27me3_HA_CVP$GName,K4me3_HA_CVP$GName)
