@@ -1,0 +1,21 @@
+#Pseudo-time series
+#counts and metadata are downloaded from website accompanying this publication:
+#"Resolving early mesoderm diversification through single-cell expression profiling"
+counts<-read.table("counts.txt",header=T,sep=" ",stringsAsFactors = F)
+sample_info<-read.table("metadata.txt",header=T,sep=" ",stringsAsFactors = F)
+library(TSCAN)
+pt<-counts[,colnames(counts) %in% sample_info$cellName[sample_info$cluster %in% c("yellow","brown")]]
+procdata <- preprocess(pt)
+ptmclust <- exprmclust(procdata)
+plotmclust(ptmclust)
+
+ptorder <- TSCANorder(ptmclust)
+
+#Psedudotime plot for Nkx2-5. Other genes follow the same proceedure
+expr <- as.numeric(log2(pt["ENSMUSG00000015579",]+1))
+names(expr)<-colnames(pt)
+time_order<-TSCANorder(ptmclust,flip=TRUE,orderonly=FALSE)
+ind<-match(time_order$sample_name,names(expr))
+time_order$expr<-expr[ind]
+library(ggplot2)
+ggplot(time_order,aes(x=Pseudotime,y=expr))+geom_point()+geom_smooth() + ylab("Log2(Noramlized counts)") + ggtitle("Nkx2-5")
